@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "timewarp",
+	"version": "${version}",
+	"name": "Timewarp",
+	"description": "A Minecraft mod that revives classic Minecraft mechanics, adding areas with customizable retro features, random challenges, and old-school gameplay elements for a unique nostalgic experience.",
+	"authors": [
+		"Dooji"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/timewarp",
+		"sources": "https://github.com/dooji2/timewarp"
+	},
+	"license": "GPL-v3",
+	"icon": "assets/timewarp/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["com.dooji.timewarp.Timewarp"],
+		"client": ["com.dooji.timewarp.TimewarpClient"]
+	},
+	"mixins": [
+		"timewarp.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.7",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
+	}
+}

@@ -1,0 +1,26 @@
+{
+  "required": true,
+  "package": "com.dooji.timewarp.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "EntityMixin",
+    "HungerManagerMixin",
+    "ItemMixin",
+    "LivingEntityMixin",
+    "MinecartEntityMixin",
+    "PlayerEntityMixin",
+    "PlayerInventoryMixin",
+    "ScreenHandlerMixin",
+    "TimewarpAxeServerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "CameraToggleMixin",
+    "InGameHudAccessor",
+    "InGameHudMixin",
+    "TimewarpAxeInteractionMixin",
+    "TimewarpWireframeMixin"
+  ]
+}
