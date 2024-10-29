@@ -2,6 +2,7 @@ package com.dooji.timewarp.mixin;
 
 import com.dooji.timewarp.Timewarp;
 import com.dooji.timewarp.mixin.InGameHudAccessor;
+import com.dooji.timewarp.ui.CustomHeartType;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -11,6 +12,7 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.JumpingMount;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
@@ -20,6 +22,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -29,6 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class InGameHudMixin {
 
     private static boolean isRenderingCustom = false;
+    private final Random random = Random.create();
 
     @Inject(method = "renderHealthBar", at = @At("HEAD"), cancellable = true)
     public void moveHealthBar(DrawContext context, PlayerEntity player, int x, int y, int lines, int regeneratingHeartIndex, float maxHealth, int lastHealth, int health, int absorption, boolean blinking, CallbackInfo ci) {
@@ -39,8 +43,8 @@ public class InGameHudMixin {
 
             context.getMatrices().translate(0, 4, 0);
 
-            ((InGameHudAccessor) (Object) this).invokeRenderStatusBars(context);
             renderCustomArmor(context, player, x, y);
+            renderCustomHealthBar(context, player, x, y, lines, regeneratingHeartIndex, maxHealth, lastHealth, health, absorption, blinking);
 
             isRenderingCustom = false;
         }
@@ -51,6 +55,59 @@ public class InGameHudMixin {
         if (Timewarp.isRetroShiftActive(player) && Timewarp.getRetroSetting(player, "oldGUI")) {
             ci.cancel();
         }
+    }
+
+    private void renderCustomHealthBar(DrawContext context, PlayerEntity player, int x, int y, int lines, int regeneratingHeartIndex, float maxHealth, int lastHealth, int health, int absorption, boolean blinking) {
+        CustomHeartType heartType = CustomHeartType.fromPlayerState(player);
+        boolean hardcore = player.getWorld().getLevelProperties().isHardcore();
+        int totalHearts = MathHelper.ceil(maxHealth / 2.0);
+        int absorptionHearts = MathHelper.ceil(absorption / 2.0);
+        int totalSlots = totalHearts + absorptionHearts;
+
+        for (int i = totalSlots - 1; i >= 0; --i) {
+            int row = i / 10;
+            int column = i % 10;
+            int posX = x + column * 8;
+            int posY = y - row * lines;
+
+            if (lastHealth + absorption <= 4) {
+                posY += this.random.nextInt(2);
+            }
+
+            if (i < totalHearts && i == regeneratingHeartIndex) {
+                posY -= 2;
+            }
+
+            this.drawHeart(context, CustomHeartType.CONTAINER, posX, posY, hardcore, blinking, false);
+
+            int heartIndex = i * 2;
+            boolean isAbsorption = i >= totalHearts;
+            if (isAbsorption) {
+                int adjustedAbsorption = heartIndex - totalHearts * 2;
+                if (adjustedAbsorption < absorption) {
+                    boolean isHalfAbsorption = adjustedAbsorption + 1 == absorption;
+                    this.drawHeart(context, heartType == CustomHeartType.WITHERED ? heartType : CustomHeartType.ABSORBING, posX, posY, hardcore, false, isHalfAbsorption);
+                }
+            }
+
+            if (blinking && heartIndex < health) {
+                boolean isHalfHeart = heartIndex + 1 == health;
+                this.drawHeart(context, heartType, posX, posY, hardcore, true, isHalfHeart);
+            } else if (heartIndex < lastHealth) {
+                boolean isHalfHeart = heartIndex + 1 == lastHealth;
+                this.drawHeart(context, heartType, posX, posY, hardcore, false, isHalfHeart);
+            }
+        }
+    }
+
+    private void drawHeart(DrawContext context, CustomHeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half) {
+        RenderSystem.enableBlend();
+
+        Identifier texture = type.getTexture(hardcore, half, blinking);
+
+        context.drawGuiTexture(texture, x, y, 9, 9);
+
+        RenderSystem.disableBlend();
     }
 
     private void renderCustomArmor(DrawContext context, PlayerEntity player, int x, int y) {
@@ -81,7 +138,7 @@ public class InGameHudMixin {
     }
 
     @Inject(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;isSubmergedIn(Lnet/minecraft/registry/tag/TagKey;)Z"), cancellable = true)
-    private void adjustAirBubblePosition(DrawContext context, CallbackInfo ci) {
+    private void moveAirBubbleBar(DrawContext context, CallbackInfo ci) {
         PlayerEntity playerEntity = MinecraftClient.getInstance().player;
         if (playerEntity == null) return;
 
@@ -98,7 +155,7 @@ public class InGameHudMixin {
         int screenWidth = context.getScaledWindowWidth();
         int screenHeight = context.getScaledWindowHeight();
 
-        int airBubbleX = screenWidth / 2 + 91;
+        int airBubbleX = screenWidth / 2 + 90;
         int airBubbleY = player.getArmor() > 0 ? screenHeight - 49 : screenHeight - 39;
 
         int fullBubbles = MathHelper.ceil((double) (air - 2) * 10.0 / (double) maxAir);
