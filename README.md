@@ -16,10 +16,10 @@ To set up a Timewarp area:
    - **Right-click** on a block to set the second corner.
 2. Run `/timewarp create [name]` to create the area using the selected corners. Replace `[name]` with a custom name for your area, e.g., `/timewarp create "Retro Zone"`.
 
-## Retro Mechanics
+## Old Mechanics
 
 <details>
-<summary>Old Mechanics Overview</summary>
+<summary>Overview</summary>
 
 - **`allowStacking`**: Prevents stacking of food items.
 - **`oldMinecart`**: The player’s head moves according to the minecart's direction.
@@ -32,6 +32,8 @@ To set up a Timewarp area:
 - **`noSwimming`**: Disables swimming, as in pre-1.13 versions.
 - **`oldCombat`**: Reverts combat mechanics to earlier versions, removing the attack cooldown.
 - **`noTrading`**: Disables trading with villagers.
+- **`oldLook`**: Uses old textures.
+- **`noSmoothLighting`**: Disables smooth lighting.
 
 </details>
 
@@ -60,7 +62,7 @@ To set up a Timewarp area:
   - `feature`: Name of the feature to edit.
   - `enabled`: true/false to enable or disable the feature.
 - **Features**:
-  - `allowStacking`, `oldMinecart`, `oldAnimalBehavior`, `allowSprinting`, `versionText`, `oldGUI`, `noFrontView`, `noSneaking`, `noSwimming`, `oldCombat`, `noTrading`
+  - `allowStacking`, `oldMinecart`, `oldAnimalBehavior`, `allowSprinting`, `versionText`, `oldGUI`, `noFrontView`, `noSneaking`, `noSwimming`, `oldCombat`, `noTrading`, `oldLook`, `noSmoothLighting`
 - **Example**: `/timewarp edit 1 oldCombat true`
 </details>
 
