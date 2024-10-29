@@ -64,6 +64,8 @@ public class TimewarpCommands {
                                             builder.suggest("noSwimming");
                                             builder.suggest("oldCombat");
                                             builder.suggest("noTrading");
+                                            builder.suggest("oldLook");
+                                            builder.suggest("noSmoothLighting");
                                             return builder.buildFuture();
                                         })
                                         .then(CommandManager.argument("enabled", BoolArgumentType.bool())

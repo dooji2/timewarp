@@ -33,6 +33,8 @@ public class TimewarpArea {
         features.put("noSwimming", true);
         features.put("oldCombat", true);
         features.put("noTrading", true);
+        features.put("oldLook", true);
+        features.put("noSmoothLighting", true);
     }
 
     public int getId() {

@@ -278,6 +278,8 @@ public class Timewarp implements ModInitializer {
         settings.put("noSwimming", area.getFeature("noSwimming"));
         settings.put("oldCombat", area.getFeature("oldCombat"));
         settings.put("noTrading", area.getFeature("noTrading"));
+        settings.put("oldLook", area.getFeature("oldLook"));
+        settings.put("noSmoothLighting", area.getFeature("noSmoothLighting"));
 
         retroShiftActive.put(player, true);
         retroTimeShiftSettings.put(player, settings);

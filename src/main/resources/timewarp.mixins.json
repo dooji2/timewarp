@@ -18,8 +18,10 @@
   },
   "client": [
     "CameraToggleMixin",
+    "GameOptionsAccessor",
     "InGameHudAccessor",
     "InGameHudMixin",
+    "SmoothLightingMixin",
     "TimewarpAxeInteractionMixin",
     "TimewarpWireframeMixin"
   ]

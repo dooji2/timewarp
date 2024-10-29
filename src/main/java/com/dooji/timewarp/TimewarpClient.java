@@ -15,6 +15,8 @@ import net.minecraft.client.toast.ToastManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -28,6 +30,7 @@ import static com.dooji.timewarp.Timewarp.*;
 
 public class TimewarpClient implements ClientModInitializer {
     private static TimewarpClient instance;
+    private boolean wasProgrammerArtEnabled = false;
 
     @Override
     public void onInitializeClient() {
@@ -51,6 +54,8 @@ public class TimewarpClient implements ClientModInitializer {
             managePlayerShift(client.player);
             handlePlayerAreaFeatures(client.player);
         }
+
+        manageProgrammerArtPack();
     }
 
     public void handlePlayerAreaFeatures(PlayerEntity player) {
@@ -145,6 +150,8 @@ public class TimewarpClient implements ClientModInitializer {
         settings.put("noSwimming", area.getFeature("noSwimming"));
         settings.put("oldCombat", area.getFeature("oldCombat"));
         settings.put("noTrading", area.getFeature("noTrading"));
+        settings.put("oldLook", area.getFeature("oldLook"));
+        settings.put("noSmoothLighting", area.getFeature("noSmoothLighting"));
 
         retroShiftActive.put(player, true);
         retroTimeShiftSettings.put(player, settings);
@@ -189,6 +196,8 @@ public class TimewarpClient implements ClientModInitializer {
             put("noSwimming", random.nextBoolean());
             put("oldCombat", random.nextBoolean());
             put("noTrading", random.nextBoolean());
+            put("oldLook", random.nextBoolean());
+            put("noSmoothLighting", random.nextBoolean());
         }});
     }
 
@@ -261,5 +270,34 @@ public class TimewarpClient implements ClientModInitializer {
                 32
         );
         toastManager.add(customToast);
+    }
+
+    public void manageProgrammerArtPack() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        ResourcePackManager resourcePackManager = client.getResourcePackManager();
+        ResourcePackProfile programmerArtPack = resourcePackManager.getProfile("programmer_art");
+
+        if (client.player != null && programmerArtPack != null) {
+            boolean shouldEnablePack = Timewarp.isRetroShiftActive(client.player) && Timewarp.getRetroSetting(client.player, "oldLook");
+            boolean isProgrammerArtEnabled = client.options.resourcePacks.contains("programmer_art");
+
+            if (!isProgrammerArtEnabled) {
+                wasProgrammerArtEnabled = false;
+            }
+
+            if (shouldEnablePack && !wasProgrammerArtEnabled) {
+                client.options.resourcePacks.add("programmer_art");
+                wasProgrammerArtEnabled = true;
+                resourcePackManager.scanPacks();
+                client.options.addResourcePackProfilesToManager(resourcePackManager);
+                client.reloadResources();
+            } else if (!shouldEnablePack && wasProgrammerArtEnabled) {
+                client.options.resourcePacks.remove("programmer_art");
+                wasProgrammerArtEnabled = false;
+                resourcePackManager.scanPacks();
+                client.options.addResourcePackProfilesToManager(resourcePackManager);
+                client.reloadResources();
+            }
+        }
     }
 }
