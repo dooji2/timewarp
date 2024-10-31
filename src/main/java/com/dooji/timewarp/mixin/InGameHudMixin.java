@@ -41,7 +41,7 @@ public class InGameHudMixin {
 
             isRenderingCustom = true;
 
-            context.getMatrices().translate(0, 4, 0);
+            context.getMatrices().translate(0, 7, 0);
 
             renderCustomArmor(context, player, x, y);
             renderCustomHealthBar(context, player, x, y, lines, regeneratingHeartIndex, maxHealth, lastHealth, health, absorption, blinking);
@@ -115,15 +115,19 @@ public class InGameHudMixin {
         if (armorLevel > 0) {
             RenderSystem.enableBlend();
 
-            int adjustedY = y;
-
-            int gap = 10;
-            int adjustedX = x + 90 + gap;
-
             InGameHudAccessor hud = (InGameHudAccessor) MinecraftClient.getInstance().inGameHud;
 
-            for (int n = 0; n < 10; ++n) {
-                int armorX = adjustedX + n * 8;
+            int adjustedY = y;
+            int gap = 10;
+
+            int adjustedX = x + 82 + gap;
+            int armorIconWidth = 9;
+            int totalArmorSlots = 10;
+
+            int startX = adjustedX + (totalArmorSlots * armorIconWidth) - armorIconWidth;
+
+            for (int n = 9; n >= 0; --n) {
+                int armorX = startX - n * armorIconWidth;
                 if (n * 2 + 1 < armorLevel) {
                     context.drawGuiTexture(hud.getFullArmorTexture(), armorX, adjustedY, 9, 9);
                 } else if (n * 2 + 1 == armorLevel) {
