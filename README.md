@@ -4,7 +4,7 @@
 
 **Requires Fabric API. Also compatible with NeoForge, using Sintrya Connector, requires Forgified Fabric API.**
 
-**Timewarp** is a Minecraft mod that brings back classic game mechanics with a fun twist! It adds random challenges with retro gameplay and lets you create areas where old-school mechanics can be enabled. Customize everything to bring back the feel of older Minecraft versions.
+**Timewarp** is a Minecraft mod that brings back classic game mechanics with a fun twist! It adds random challenges with old gameplay and lets you create areas where old-school mechanics can be enabled. Customize everything to bring back the feel of older Minecraft versions.
 
 The mod’s data is saved in the world’s root folder as `timewarp_data.json`. This includes all configuration settings, timewarp areas, and shift settings, making your Timewarp setup world-specific.
 ## Usage
@@ -14,8 +14,9 @@ To set up a Timewarp area:
 1. Use the *Timewarp Axe* to select corners:
    - **Left-click** on a block to set the first corner.
    - **Right-click** on a block to set the second corner.
-2. Run `/timewarp create [name]` to create the area using the selected corners. Replace `[name]` with a custom name for your area, e.g., `/timewarp create "Retro Zone"`.
+2. Run `/timewarp create [name]` to create the area using the selected corners. Replace `[name]` with a custom name for your area, e.g., `/timewarp create "Minecraft Alpha"`.
 
+If you hold the *Timewarp Axe*, you will visually see areas that are within your render distance.
 ## Old Mechanics
 
 <details>
@@ -50,7 +51,7 @@ To set up a Timewarp area:
 
 - **Creates** a Timewarp area using two selected corners.
 - **Parameters**: `name` - the name of the area.
-- **Example**: `/timewarp create "Retro Zone"`
+- **Example**: `/timewarp create "Minecraft Alpha"`
 </details>
 
 <details>
@@ -76,7 +77,7 @@ To set up a Timewarp area:
 <details>
 <summary><code>/timewarp trigger [player]</code> - Trigger a Time Shift</summary>
 
-- **Forces** a time shift on a specified player, applying random retro mechanics.
+- **Forces** a time shift on a specified player, applying random old mechanics.
 - **Example**: `/timewarp trigger Player1`
 </details>
 
