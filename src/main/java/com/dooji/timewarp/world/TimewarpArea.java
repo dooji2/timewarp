@@ -44,8 +44,8 @@ public class TimewarpArea {
     public boolean contains(BlockPos pos) {
         return pos.getX() >= Math.min(corner1.getX(), corner2.getX()) &&
                 pos.getX() <= Math.max(corner1.getX(), corner2.getX()) &&
-                pos.getY() >= Math.min(corner1.getY(), corner2.getY()) &&
-                pos.getY() <= Math.max(corner1.getY(), corner2.getY()) &&
+                pos.getY() >= Math.min(corner1.getY(), corner2.getY()) - 1 &&
+                pos.getY() <= Math.max(corner1.getY(), corner2.getY()) + 1 &&
                 pos.getZ() >= Math.min(corner1.getZ(), corner2.getZ()) &&
                 pos.getZ() <= Math.max(corner1.getZ(), corner2.getZ());
     }

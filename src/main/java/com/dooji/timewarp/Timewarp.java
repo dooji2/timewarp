@@ -331,13 +331,15 @@ public class Timewarp implements ModInitializer {
     }
 
 
-    public int addTimewarpArea(BlockPos corner1, BlockPos corner2, UUID playerUUID, String name) {
+    public int addTimewarpArea(BlockPos corner1, BlockPos corner2, PlayerEntity player, String name) {
         for (TimewarpArea area : timewarpAreas) {
             if (areasOverlap(area, corner1, corner2)) return -1;
         }
 
-        TimewarpArea newArea = new TimewarpArea(corner1, corner2, playerUUID, name, nextAreaId++);
+        TimewarpArea newArea = new TimewarpArea(corner1, corner2, player.getUuid(), name, nextAreaId++);
         timewarpAreas.add(newArea);
+
+        TimewarpAxe.clearSelection(player);
         return newArea.getId();
     }
 

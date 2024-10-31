@@ -1,5 +1,6 @@
 package com.dooji.timewarp.commands;
 
+import com.dooji.timewarp.items.TimewarpAxe;
 import com.dooji.timewarp.world.TimewarpArea;
 import com.dooji.timewarp.Timewarp;
 import com.mojang.brigadier.CommandDispatcher;
@@ -143,7 +144,7 @@ public class TimewarpCommands {
             return 0;
         }
 
-        int areaId = Timewarp.getInstance().addTimewarpArea(selection[0], selection[1], playerId, areaName);
+        int areaId = Timewarp.getInstance().addTimewarpArea(selection[0], selection[1], player, areaName);
         if (areaId >= 0) {
             player.sendMessage(Text.translatable("message.timewarp.area_created", areaId, areaName), false);
 
