@@ -29,8 +29,15 @@ public class TimewarpAxeInteractionMixin {
 
         ItemStack heldItem = player.getMainHandStack();
         if (heldItem.getItem() instanceof TimewarpAxe) {
-            TimewarpAxe.getSelection(player)[0] = pos;
-            player.sendMessage(Text.translatable("message.timewarp.first_corner_set", pos.getX(), pos.getY(), pos.getZ()), true);
+            BlockPos[] selections = TimewarpAxe.getSelection(player);
+            
+            if (selections[0] == null) {
+                selections[0] = pos;
+                player.sendMessage(Text.translatable("message.timewarp.first_corner_set", pos.getX(), pos.getY(), pos.getZ()), true);
+            } else {
+                selections[1] = pos;
+                player.sendMessage(Text.translatable("message.timewarp.second_corner_set", pos.getX(), pos.getY(), pos.getZ()), true);
+            }
 
             cir.setReturnValue(false);
         }
@@ -43,18 +50,22 @@ public class TimewarpAxeInteractionMixin {
         ItemStack heldItem = player.getMainHandStack();
         if (heldItem.getItem() instanceof TimewarpAxe) {
             BlockPos pos = hitResult.getBlockPos();
-
-            TimewarpAxe.getSelection(player)[1] = pos;
-            player.sendMessage(Text.translatable("message.timewarp.second_corner_set", pos.getX(), pos.getY(), pos.getZ()), true);
-
             BlockPos[] selections = TimewarpAxe.getSelection(player);
-            BlockPos firstCorner = selections[0];
-            BlockPos secondCorner = selections[1];
 
-            if (MinecraftClient.getInstance().isIntegratedServerRunning()) {
-                Timewarp.getInstance().storeCornerSelection(player.getUuid(), firstCorner, secondCorner);
+            if (selections[0] == null) {
+                selections[0] = pos;
+                player.sendMessage(Text.translatable("message.timewarp.first_corner_set", pos.getX(), pos.getY(), pos.getZ()), true);
             } else {
-                Timewarp.getInstance().handleCornerSelection(player, firstCorner, secondCorner);
+                selections[1] = pos;
+                player.sendMessage(Text.translatable("message.timewarp.second_corner_set", pos.getX(), pos.getY(), pos.getZ()), true);
+            }
+
+            if (selections[0] != null && selections[1] != null) {
+                if (MinecraftClient.getInstance().isIntegratedServerRunning()) {
+                    Timewarp.getInstance().storeCornerSelection(player.getUuid(), selections[0], selections[1]);
+                } else {
+                    Timewarp.getInstance().handleCornerSelection(player, selections[0], selections[1]);
+                }
             }
 
             cir.setReturnValue(ActionResult.SUCCESS);
