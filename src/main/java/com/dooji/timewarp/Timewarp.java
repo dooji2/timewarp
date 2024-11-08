@@ -49,6 +49,7 @@ public class Timewarp implements ModInitializer {
     public static int MIN_OP_LEVEL;
     public static int SAVE_INTERVAL;
     public static boolean ENABLE_TRIGGERING;
+    public static boolean DEBUG_MODE;
 
     static final Random random = new Random();
 
@@ -384,6 +385,7 @@ public class Timewarp implements ModInitializer {
         MIN_OP_LEVEL = data.preferences.opCommandLevel != 0 ? data.preferences.opCommandLevel : 2;
         SAVE_INTERVAL = data.preferences.saveInterval != 0 ? data.preferences.saveInterval : 12000;
         ENABLE_TRIGGERING = data.preferences.enableTriggering;
+        DEBUG_MODE = data.preferences.debugMode;
 
         timewarpAreas.clear();
         timewarpAreas.addAll(data.timewarpAreas);
@@ -407,6 +409,7 @@ public class Timewarp implements ModInitializer {
         data.preferences.saveInterval = SAVE_INTERVAL;
         data.preferences.opCommandLevel = MIN_OP_LEVEL;
         data.preferences.enableTriggering = ENABLE_TRIGGERING;
+        data.preferences.debugMode = DEBUG_MODE;
 
         DataHandler.saveData(server, data);
     }
@@ -422,6 +425,7 @@ public class Timewarp implements ModInitializer {
         SAVE_INTERVAL = data.preferences.saveInterval;
         MIN_OP_LEVEL = data.preferences.opCommandLevel;
         ENABLE_TRIGGERING = data.preferences.enableTriggering;
+        DEBUG_MODE = data.preferences.debugMode;
     }
 
     public void saveData(MinecraftServer server) {
@@ -435,6 +439,7 @@ public class Timewarp implements ModInitializer {
         data.preferences.saveInterval = SAVE_INTERVAL;
         data.preferences.opCommandLevel = MIN_OP_LEVEL;
         data.preferences.enableTriggering = ENABLE_TRIGGERING;
+        data.preferences.debugMode = DEBUG_MODE;
 
         DataHandler.saveData(server, data);
     }
@@ -450,6 +455,7 @@ public class Timewarp implements ModInitializer {
         data.preferences.saveInterval = SAVE_INTERVAL;
         data.preferences.opCommandLevel = MIN_OP_LEVEL;
         data.preferences.enableTriggering = ENABLE_TRIGGERING;
+        data.preferences.debugMode = DEBUG_MODE;
 
         TimewarpNetworking.sendTimewarpDataToClient(player, data);
     }

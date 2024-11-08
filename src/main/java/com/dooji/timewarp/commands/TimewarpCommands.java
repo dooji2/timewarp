@@ -110,7 +110,8 @@ public class TimewarpCommands {
                                             builder.suggest("shiftDurationMin").suggest("shiftDurationMax")
                                                     .suggest("timeUntilShiftMin").suggest("timeUntilShiftMax")
                                                     .suggest("saveInterval").suggest("opCommandLevel")
-                                                    .suggest("enableTriggering");
+                                                    .suggest("enableTriggering")
+                                                    .suggest("debugMode");
                                             return builder.buildFuture();
                                         })
                                         .then(CommandManager.argument("value", StringArgumentType.word())
@@ -232,6 +233,7 @@ public class TimewarpCommands {
                 case "saveInterval" -> Timewarp.SAVE_INTERVAL = Integer.parseInt(value);
                 case "opCommandLevel" -> Timewarp.MIN_OP_LEVEL = Integer.parseInt(value);
                 case "enableTriggering" -> Timewarp.ENABLE_TRIGGERING = Boolean.parseBoolean(value);
+                case "debugMode" -> Timewarp.DEBUG_MODE = Boolean.parseBoolean(value);
                 default -> {
                     source.sendFeedback(() -> Text.translatable("message.timewarp.invalid_config_variable"), false);
                     return 0;
