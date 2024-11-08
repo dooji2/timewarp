@@ -94,7 +94,7 @@ If you hold the *Timewarp Axe*, you will visually see areas that are within your
 - **reload**: Reloads all configuration settings from the data file.
 - **edit**: Modify specific config variables.
 - **Parameters** for `edit`:
-  - `variable`: Setting to edit (`shiftDurationMin`, `shiftDurationMax`, `timeUntilShiftMin`, `timeUntilShiftMax`, `saveInterval`, `opCommandLevel`, `enableTriggering`)
+  - `variable`: Setting to edit (`shiftDurationMin`, `shiftDurationMax`, `timeUntilShiftMin`, `timeUntilShiftMax`, `saveInterval`, `opCommandLevel`, `enableTriggering`, `debugMode`)
   - `value`: New value for the variable.
 - **Example**: `/timewarp config edit shiftDurationMax 300`
 </details>
