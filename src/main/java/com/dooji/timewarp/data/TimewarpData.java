@@ -23,5 +23,6 @@ public class TimewarpData {
         public int saveInterval = 12000;
         public int opCommandLevel = 2;
         public boolean enableTriggering = true;
+        public boolean debugMode = false;
     }
 }
