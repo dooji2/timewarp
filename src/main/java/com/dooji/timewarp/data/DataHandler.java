@@ -29,7 +29,10 @@ public class DataHandler {
             try (FileWriter writer = new FileWriter(filePath.toFile())) {
                 gson.toJson(data, writer);
             }
-            Timewarp.LOGGER.info("[Timewarp] Timewarp data saved to {}", filePath);
+
+            if (Timewarp.DEBUG_MODE) {
+                Timewarp.LOGGER.info("[Timewarp] Timewarp data saved to {}", filePath);
+            }
         } catch (IOException e) {
             Timewarp.LOGGER.error("[Timewarp] Failed to save timewarp data", e);
         }
