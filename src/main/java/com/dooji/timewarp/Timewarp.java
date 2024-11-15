@@ -51,15 +51,16 @@ public class Timewarp implements ModInitializer {
     public static boolean ENABLE_TRIGGERING;
     public static boolean DEBUG_MODE;
 
+    public static final Map<PlayerEntity, Map<String, Boolean>> retroTimeShiftSettings = new HashMap<>();
+    public static final Map<PlayerEntity, Map<Item, Integer>> objectives = new HashMap<>();
+    public static final Map<PlayerEntity, Integer> playerShiftTimers = new HashMap<>();
+
     static final Random random = new Random();
 
     static final List<TimewarpArea> timewarpAreas = new ArrayList<>();
     static final Map<PlayerEntity, TimewarpArea> activePlayerAreas = new HashMap<>();
-    static final Map<PlayerEntity, Integer> playerShiftTimers = new HashMap<>();
     static final Map<PlayerEntity, Integer> shiftDurationTimers = new HashMap<>();
     static final Map<PlayerEntity, Boolean> retroShiftActive = new HashMap<>();
-    static final Map<PlayerEntity, Map<String, Boolean>> retroTimeShiftSettings = new HashMap<>();
-    static final Map<PlayerEntity, Map<Item, Integer>> objectives = new HashMap<>();
     static final Map<PlayerEntity, List<ItemStack>> startingInventory = new HashMap<>();
     static final Map<PlayerEntity, PausedTimewarpState> pausedTimewarps = new HashMap<>();
 
