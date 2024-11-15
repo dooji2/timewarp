@@ -18,6 +18,7 @@
   },
   "client": [
     "CameraToggleMixin",
+    "DebugHudMixin",
     "GameOptionsAccessor",
     "InGameHudAccessor",
     "InGameHudMixin",
