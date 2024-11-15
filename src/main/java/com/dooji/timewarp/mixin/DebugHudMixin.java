@@ -39,13 +39,31 @@ public class DebugHudMixin {
         Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("timewarp");
         String modVersion = modContainer.map(container -> container.getMetadata().getVersion().getFriendlyString()).orElse("unknown");
 
+        String modLoaderVersion;
+        if (FabricLoader.getInstance().isModLoaded("fabricloader")) {
+            modLoaderVersion = FabricLoader.getInstance()
+                    .getModContainer("fabricloader")
+                    .map(container -> "fabric " + container.getMetadata().getVersion().getFriendlyString())
+                    .orElse("fabric unknown");
+        } else if (FabricLoader.getInstance().isModLoaded("neoforge")) {
+            modLoaderVersion = FabricLoader.getInstance()
+                    .getModContainer("neoforge")
+                    .map(container -> "neoforge " + container.getMetadata().getVersion().getFriendlyString())
+                    .orElse("neoforge unknown");
+        } else {
+            modLoaderVersion = "unknown";
+        }
+
         Map.Entry<String, Integer>[] debugLines = new Map.Entry[]{
                 new AbstractMap.SimpleEntry<>("timewarp v" + modVersion, 0xFFFFFF),
                 new AbstractMap.SimpleEntry<>("minecraft " + SharedConstants.getGameVersion().getName(), 0xFFFFFF),
-                new AbstractMap.SimpleEntry<>("fabric " + FabricLoader.getInstance().getModContainer("fabricloader").get().getMetadata().getVersion(), 0xFFFFFF),
-                new AbstractMap.SimpleEntry<>("isTimewarpActive: " + Timewarp.getInstance().isRetroShiftActive(player), Timewarp.getInstance().isRetroShiftActive(player) ? Formatting.GREEN.getColorValue() : Formatting.RED.getColorValue()),
-                new AbstractMap.SimpleEntry<>("hasObjective: " + Timewarp.getInstance().objectives.containsKey(player), Timewarp.getInstance().objectives.containsKey(player) ? Formatting.GREEN.getColorValue() : Formatting.RED.getColorValue()),
-                new AbstractMap.SimpleEntry<>("timeUntilSave: " + (Timewarp.getInstance().SAVE_INTERVAL - (client.world.getTimeOfDay() % Timewarp.getInstance().SAVE_INTERVAL)) / 20 + "s", 0xFFFFFF),
+                new AbstractMap.SimpleEntry<>(modLoaderVersion, 0xFFFFFF),
+                new AbstractMap.SimpleEntry<>("isTimewarpActive: " + Timewarp.getInstance().isRetroShiftActive(player),
+                        Timewarp.getInstance().isRetroShiftActive(player) ? Formatting.GREEN.getColorValue() : Formatting.RED.getColorValue()),
+                new AbstractMap.SimpleEntry<>("hasObjective: " + Timewarp.getInstance().objectives.containsKey(player),
+                        Timewarp.getInstance().objectives.containsKey(player) ? Formatting.GREEN.getColorValue() : Formatting.RED.getColorValue()),
+                new AbstractMap.SimpleEntry<>("timeUntilSave: " + (Timewarp.getInstance().SAVE_INTERVAL -
+                        (client.world.getTimeOfDay() % Timewarp.getInstance().SAVE_INTERVAL)) / 20 + "s", 0xFFFFFF),
                 new AbstractMap.SimpleEntry<>("timeUntilShift: " + Timewarp.getInstance().playerShiftTimers.getOrDefault(player, 0) / 20 + "s", 0xFFFFFF),
                 new AbstractMap.SimpleEntry<>("remainingShiftTime: " + Timewarp.getInstance().getShiftRemainingTime(player) / 20 + "s", 0xFFFFFF)
         };
