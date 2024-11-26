@@ -36,5 +36,11 @@
   "message.timewarp.shift_active_no_teleport": "You cannot teleport while a shift is active. (Are you in an area?)",
   "message.timewarp.invalid_mechanics_format": "Invalid format for automatic mechanics. Use '<mechanic> <true/false>'.",
   "message.timewarp.mechanic_updated": "Mechanic '%s' updated to %s.",
-  "message.timewarp.invalid_mechanic": "Mechanic '%s' is not recognized."
+  "message.timewarp.invalid_mechanic": "Mechanic '%s' is not recognized.",
+  "key.timewarp.old_textures": "Old Textures",
+  "category.timewarp": "Timewarp",
+  "message.timewarp.request_textures": "Timewarp Request",
+  "message.timewarp.press_key_to_enable": "Press %s to enable old textures!",
+  "message.timewarp.textures_enabled": "Old Textures Enabled",
+  "message.timewarp.old_textures_active": "Old textures are now active!"
 }
