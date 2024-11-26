@@ -33,5 +33,8 @@
   "message.timewarp.random_message_5": "Time feels strange now...",
   "message.timewarp.teleported": "Teleported to area \"%s\"",
   "message.timewarp.player_not_found": "Player not found to teleport.",
-  "message.timewarp.shift_active_no_teleport": "You cannot teleport while a shift is active. (Are you in an area?)"
+  "message.timewarp.shift_active_no_teleport": "You cannot teleport while a shift is active. (Are you in an area?)",
+  "message.timewarp.invalid_mechanics_format": "Invalid format for automatic mechanics. Use '<mechanic> <true/false>'.",
+  "message.timewarp.mechanic_updated": "Mechanic '%s' updated to %s.",
+  "message.timewarp.invalid_mechanic": "Mechanic '%s' is not recognized."
 }
