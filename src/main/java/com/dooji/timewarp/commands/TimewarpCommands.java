@@ -18,6 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -107,17 +108,21 @@ public class TimewarpCommands {
                         .then(CommandManager.literal("edit")
                                 .then(CommandManager.argument("variable", StringArgumentType.word())
                                         .suggests((context, builder) -> {
-                                            builder.suggest("shiftDurationMin").suggest("shiftDurationMax")
-                                                    .suggest("timeUntilShiftMin").suggest("timeUntilShiftMax")
-                                                    .suggest("saveInterval").suggest("opCommandLevel")
+                                            builder.suggest("shiftDurationMin")
+                                                    .suggest("shiftDurationMax")
+                                                    .suggest("timeUntilShiftMin")
+                                                    .suggest("timeUntilShiftMax")
+                                                    .suggest("saveInterval")
+                                                    .suggest("opCommandLevel")
                                                     .suggest("enableTriggering")
-                                                    .suggest("debugMode");
+                                                    .suggest("debugMode")
+                                                    .suggest("automaticObjectiveMechanics");
                                             return builder.buildFuture();
                                         })
-                                        .then(CommandManager.argument("value", StringArgumentType.word())
+                                        .then(CommandManager.argument("value", StringArgumentType.greedyString())
                                                 .executes(context -> {
-                                                    var variable = StringArgumentType.getString(context, "variable");
-                                                    var value = StringArgumentType.getString(context, "value");
+                                                    String variable = StringArgumentType.getString(context, "variable");
+                                                    String value = StringArgumentType.getString(context, "value");
                                                     return editConfigPreference(context.getSource(), variable, value);
                                                 })))))
                 .then(CommandManager.literal("tp").requires(source -> source.hasPermissionLevel(Timewarp.MIN_OP_LEVEL))
@@ -225,32 +230,48 @@ public class TimewarpCommands {
 
     private static int editConfigPreference(ServerCommandSource source, String variable, String value) {
         try {
-            switch (variable) {
-                case "shiftDurationMin" -> Timewarp.SHIFT_DURATION_MIN = Integer.parseInt(value);
-                case "shiftDurationMax" -> Timewarp.SHIFT_DURATION_MAX = Integer.parseInt(value);
-                case "timeUntilShiftMin" -> Timewarp.TIME_UNTIL_SHIFT_MIN = Integer.parseInt(value);
-                case "timeUntilShiftMax" -> Timewarp.TIME_UNTIL_SHIFT_MAX = Integer.parseInt(value);
-                case "saveInterval" -> Timewarp.SAVE_INTERVAL = Integer.parseInt(value);
-                case "opCommandLevel" -> Timewarp.MIN_OP_LEVEL = Integer.parseInt(value);
-                case "enableTriggering" -> Timewarp.ENABLE_TRIGGERING = Boolean.parseBoolean(value);
-                case "debugMode" -> Timewarp.DEBUG_MODE = Boolean.parseBoolean(value);
-                default -> {
-                    source.sendFeedback(() -> Text.translatable("message.timewarp.invalid_config_variable"), false);
+            if ("automaticObjectiveMechanics".equals(variable)) {
+                String[] parts = value.split(" ");
+                if (parts.length != 2) {
+                    source.sendFeedback(() -> Text.translatable("message.timewarp.invalid_mechanics_format"), false);
                     return 0;
                 }
+
+                String mechanic = parts[0];
+                boolean isEnabled = Boolean.parseBoolean(parts[1]);
+
+                if (!Timewarp.getInstance().automaticObjectiveMechanics.containsKey(mechanic)) {
+                    source.sendFeedback(() -> Text.translatable("message.timewarp.invalid_mechanic", mechanic), false);
+                    return 0;
+                }
+
+                Timewarp.getInstance().automaticObjectiveMechanics.put(mechanic, isEnabled);
+                source.sendFeedback(() -> Text.translatable("message.timewarp.mechanic_updated", mechanic, isEnabled), true);
+            } else {
+                switch (variable) {
+                    case "shiftDurationMin" -> Timewarp.SHIFT_DURATION_MIN = Integer.parseInt(value);
+                    case "shiftDurationMax" -> Timewarp.SHIFT_DURATION_MAX = Integer.parseInt(value);
+                    case "timeUntilShiftMin" -> Timewarp.TIME_UNTIL_SHIFT_MIN = Integer.parseInt(value);
+                    case "timeUntilShiftMax" -> Timewarp.TIME_UNTIL_SHIFT_MAX = Integer.parseInt(value);
+                    case "saveInterval" -> Timewarp.SAVE_INTERVAL = Integer.parseInt(value);
+                    case "opCommandLevel" -> Timewarp.MIN_OP_LEVEL = Integer.parseInt(value);
+                    case "enableTriggering" -> Timewarp.ENABLE_TRIGGERING = Boolean.parseBoolean(value);
+                    case "debugMode" -> Timewarp.DEBUG_MODE = Boolean.parseBoolean(value);
+                    default -> {
+                        source.sendFeedback(() -> Text.translatable("message.timewarp.invalid_config_variable"), false);
+                        return 0;
+                    }
+                }
+                source.sendFeedback(() -> Text.translatable("message.timewarp.config_updated", variable, value), true);
             }
 
             Timewarp.getInstance().saveData(source.getServer());
-            Timewarp.getInstance().loadDataOnServerStart(source.getServer());
-
             MinecraftServer server = source.getServer();
             if (server.isDedicated()) {
                 for (ServerPlayerEntity serverPlayer : server.getPlayerManager().getPlayerList()) {
                     Timewarp.getInstance().sendTimewarpDataToClient(serverPlayer);
                 }
             }
-            source.sendFeedback(() -> Text.translatable("message.timewarp.config_updated", variable, value), true);
-
             return 1;
         } catch (NumberFormatException e) {
             source.sendFeedback(() -> Text.translatable("message.timewarp.invalid_value", variable), false);
@@ -290,6 +311,19 @@ public class TimewarpCommands {
         player.teleport(center.getX() + 0.5, center.getY(), center.getZ() + 0.5, false);
 
         player.sendMessage(Text.translatable("message.timewarp.teleported", area.getName()), true);
+        return 1;
+    }
+
+    private static int updateAutomaticObjectiveMechanics(ServerCommandSource source, String mechanic, boolean isEnabled) {
+        if (!Timewarp.getInstance().automaticObjectiveMechanics.containsKey(mechanic)) {
+            source.sendFeedback(() -> Text.translatable("message.timewarp.invalid_mechanic", mechanic), false);
+            return 0;
+        }
+
+        Timewarp.getInstance().automaticObjectiveMechanics.put(mechanic, isEnabled);
+        source.sendFeedback(() -> Text.translatable("message.timewarp.mechanic_updated", mechanic, isEnabled), true);
+
+        Timewarp.getInstance().saveData(source.getServer());
         return 1;
     }
 }
