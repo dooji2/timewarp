@@ -22,6 +22,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
@@ -51,6 +52,8 @@ public class Timewarp implements ModInitializer {
     public static boolean ENABLE_TRIGGERING;
     public static boolean DEBUG_MODE;
 
+    public static Item[] ITEMS = {Items.EMERALD, Items.DIAMOND, Items.GOLD_INGOT, Items.IRON_INGOT};
+
     public static final Map<PlayerEntity, Map<String, Boolean>> retroTimeShiftSettings = new HashMap<>();
     public static final Map<PlayerEntity, Map<Item, Integer>> objectives = new HashMap<>();
     public static final Map<PlayerEntity, Integer> playerShiftTimers = new HashMap<>();
@@ -58,6 +61,7 @@ public class Timewarp implements ModInitializer {
     static final Random random = new Random();
 
     static final List<TimewarpArea> timewarpAreas = new ArrayList<>();
+    public static final Map<String, Boolean> automaticObjectiveMechanics = new HashMap<>();
     static final Map<PlayerEntity, TimewarpArea> activePlayerAreas = new HashMap<>();
     static final Map<PlayerEntity, Integer> shiftDurationTimers = new HashMap<>();
     static final Map<PlayerEntity, Boolean> retroShiftActive = new HashMap<>();
@@ -388,8 +392,15 @@ public class Timewarp implements ModInitializer {
         ENABLE_TRIGGERING = data.preferences.enableTriggering;
         DEBUG_MODE = data.preferences.debugMode;
 
+        if (data.preferences.items != null && data.preferences.items.length > 0) {
+            ITEMS = data.preferences.items;
+        }
+
         timewarpAreas.clear();
         timewarpAreas.addAll(data.timewarpAreas);
+
+        automaticObjectiveMechanics.clear();
+        automaticObjectiveMechanics.putAll(data.getAutomaticObjectiveMechanics());
 
         nextAreaId = data.timewarpAreas.stream()
                 .mapToInt(TimewarpArea::getId)
@@ -411,6 +422,9 @@ public class Timewarp implements ModInitializer {
         data.preferences.opCommandLevel = MIN_OP_LEVEL;
         data.preferences.enableTriggering = ENABLE_TRIGGERING;
         data.preferences.debugMode = DEBUG_MODE;
+        data.preferences.items = ITEMS;
+
+        data.setAutomaticObjectiveMechanics(automaticObjectiveMechanics);
 
         DataHandler.saveData(server, data);
     }
@@ -427,6 +441,13 @@ public class Timewarp implements ModInitializer {
         MIN_OP_LEVEL = data.preferences.opCommandLevel;
         ENABLE_TRIGGERING = data.preferences.enableTriggering;
         DEBUG_MODE = data.preferences.debugMode;
+
+        if (data.preferences.items != null && data.preferences.items.length > 0) {
+            ITEMS = data.preferences.items;
+        }
+
+        automaticObjectiveMechanics.clear();
+        automaticObjectiveMechanics.putAll(data.getAutomaticObjectiveMechanics());
     }
 
     public void saveData(MinecraftServer server) {
@@ -441,13 +462,16 @@ public class Timewarp implements ModInitializer {
         data.preferences.opCommandLevel = MIN_OP_LEVEL;
         data.preferences.enableTriggering = ENABLE_TRIGGERING;
         data.preferences.debugMode = DEBUG_MODE;
+        data.preferences.items = ITEMS;
+
+        data.setAutomaticObjectiveMechanics(this.automaticObjectiveMechanics);
 
         DataHandler.saveData(server, data);
     }
 
     public void sendTimewarpDataToClient(ServerPlayerEntity player) {
         TimewarpData data = new TimewarpData();
-        data.timewarpAreas = new ArrayList<>(this.timewarpAreas);
+        data.timewarpAreas = new ArrayList<>(timewarpAreas);
 
         data.preferences.shiftDurationMin = SHIFT_DURATION_MIN;
         data.preferences.shiftDurationMax = SHIFT_DURATION_MAX;
@@ -457,6 +481,9 @@ public class Timewarp implements ModInitializer {
         data.preferences.opCommandLevel = MIN_OP_LEVEL;
         data.preferences.enableTriggering = ENABLE_TRIGGERING;
         data.preferences.debugMode = DEBUG_MODE;
+        data.preferences.items = ITEMS;
+
+        data.setAutomaticObjectiveMechanics(new HashMap<>(automaticObjectiveMechanics));
 
         TimewarpNetworking.sendTimewarpDataToClient(player, data);
     }

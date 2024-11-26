@@ -185,24 +185,24 @@ public class TimewarpClient implements ClientModInitializer {
 
     private void setRetroShiftSettings(PlayerEntity player) {
         retroTimeShiftSettings.put(player, new HashMap<>() {{
-            put("allowStacking", random.nextBoolean());
-            put("oldMinecart", random.nextBoolean());
-            put("oldAnimalBehavior", random.nextBoolean());
-            put("allowSprinting", random.nextBoolean());
-            put("versionText", random.nextBoolean());
-            put("oldGUI", random.nextBoolean());
-            put("noFrontView", random.nextBoolean());
-            put("noSneaking", random.nextBoolean());
-            put("noSwimming", random.nextBoolean());
-            put("oldCombat", random.nextBoolean());
-            put("noTrading", random.nextBoolean());
-            put("oldLook", random.nextBoolean());
-            put("noSmoothLighting", random.nextBoolean());
+            put("allowStacking", automaticObjectiveMechanics.getOrDefault("allowStacking", false) ? random.nextBoolean() : false);
+            put("oldMinecart", automaticObjectiveMechanics.getOrDefault("oldMinecart", false) ? random.nextBoolean() : false);
+            put("oldAnimalBehavior", automaticObjectiveMechanics.getOrDefault("oldAnimalBehavior", false) ? random.nextBoolean() : false);
+            put("allowSprinting", automaticObjectiveMechanics.getOrDefault("allowSprinting", false) ? random.nextBoolean() : false);
+            put("versionText", automaticObjectiveMechanics.getOrDefault("versionText", false) ? random.nextBoolean() : false);
+            put("oldGUI", automaticObjectiveMechanics.getOrDefault("oldGUI", false) ? random.nextBoolean() : false);
+            put("noFrontView", automaticObjectiveMechanics.getOrDefault("noFrontView", false) ? random.nextBoolean() : false);
+            put("noSneaking", automaticObjectiveMechanics.getOrDefault("noSneaking", false) ? random.nextBoolean() : false);
+            put("noSwimming", automaticObjectiveMechanics.getOrDefault("noSwimming", false) ? random.nextBoolean() : false);
+            put("oldCombat", automaticObjectiveMechanics.getOrDefault("oldCombat", false) ? random.nextBoolean() : false);
+            put("noTrading", automaticObjectiveMechanics.getOrDefault("noTrading", false) ? random.nextBoolean() : false);
+            put("oldLook", automaticObjectiveMechanics.getOrDefault("oldLook", false) ? random.nextBoolean() : false);
+            put("noSmoothLighting", automaticObjectiveMechanics.getOrDefault("noSmoothLighting", false) ? random.nextBoolean() : false);
         }});
     }
 
     private void generateObjective(PlayerEntity player, int shiftDuration) {
-        Item[] items = {Items.EMERALD, Items.DIAMOND, Items.GOLD_INGOT, Items.IRON_INGOT};
+        Item[] items = Timewarp.getInstance().ITEMS;
         Item objectiveItem = items[random.nextInt(items.length)];
         int amount = 1 + random.nextInt(3);
 
