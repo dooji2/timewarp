@@ -7,19 +7,22 @@ import com.dooji.timewarp.ui.CustomToast;
 import com.dooji.timewarp.world.TimewarpArea;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.toast.ToastManager;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,11 +33,22 @@ import static com.dooji.timewarp.Timewarp.*;
 
 public class TimewarpClient implements ClientModInitializer {
     private static TimewarpClient instance;
+    private KeyBinding oldTexturesKey;
+
+    private boolean oldTexturesKeyPressed = false;
     private boolean wasProgrammerArtEnabled = false;
+    private boolean toastShownForOldLook = false;
 
     @Override
     public void onInitializeClient() {
         instance = this;
+
+        oldTexturesKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.timewarp.old_textures",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_O,
+                "category.timewarp"
+        ));
 
         TimewarpClientNetworking.init();
         ClientTickEvents.START_CLIENT_TICK.register(this::onClientTick);
@@ -53,6 +67,15 @@ public class TimewarpClient implements ClientModInitializer {
         if (!client.isIntegratedServerRunning() && client.player != null) {
             managePlayerShift(client.player);
             handlePlayerAreaFeatures(client.player);
+        }
+
+        if (oldTexturesKey.wasPressed()) {
+            if (Timewarp.isRetroShiftActive(client.player) && Timewarp.getRetroSetting(client.player, "oldLook")) {
+                oldTexturesKeyPressed = true;
+                manageProgrammerArtPack();
+            } else {
+                oldTexturesKeyPressed = false;
+            }
         }
 
         manageProgrammerArtPack();
@@ -227,6 +250,9 @@ public class TimewarpClient implements ClientModInitializer {
         Timewarp.getInstance().resetShiftSettings(player);
         objectives.remove(player);
         startingInventory.remove(player);
+
+        oldTexturesKeyPressed = false;
+        toastShownForOldLook = false;
     }
 
     void handleClientCornerSelection(UUID playerId, BlockPos corner1, BlockPos corner2) {
@@ -279,24 +305,38 @@ public class TimewarpClient implements ClientModInitializer {
 
         if (client.player != null && programmerArtPack != null) {
             boolean shouldEnablePack = Timewarp.isRetroShiftActive(client.player) && Timewarp.getRetroSetting(client.player, "oldLook");
-            boolean isProgrammerArtEnabled = client.options.resourcePacks.contains("programmer_art");
 
-            if (!isProgrammerArtEnabled) {
-                wasProgrammerArtEnabled = false;
-            }
+            if (shouldEnablePack) {
+                if (!oldTexturesKeyPressed && !toastShownForOldLook) {
+                    String keyName = oldTexturesKey.getBoundKeyLocalizedText().getString();
+                    Identifier iconTexture = Identifier.of("minecraft", "textures/item/minecart.png");
+                    createToast("message.timewarp.request_textures", Text.translatable("message.timewarp.press_key_to_enable", keyName).getString(), iconTexture);
 
-            if (shouldEnablePack && !wasProgrammerArtEnabled) {
-                client.options.resourcePacks.add("programmer_art");
-                wasProgrammerArtEnabled = true;
-                resourcePackManager.scanPacks();
-                client.options.addResourcePackProfilesToManager(resourcePackManager);
-                client.reloadResources();
+                    toastShownForOldLook = true;
+                }
+
+                if (oldTexturesKeyPressed) {
+                    boolean isProgrammerArtEnabled = client.options.resourcePacks.contains("programmer_art");
+
+                    if (!isProgrammerArtEnabled) {
+                        client.options.resourcePacks.add("programmer_art");
+                        wasProgrammerArtEnabled = true;
+                        resourcePackManager.scanPacks();
+                        client.options.addResourcePackProfilesToManager(resourcePackManager);
+                        client.reloadResources();
+
+                        Identifier iconTexture = Identifier.of("minecraft", "textures/item/minecart.png");
+                        createToast("message.timewarp.textures_enabled", "message.timewarp.old_textures_active", iconTexture);
+                    }
+                }
             } else if (!shouldEnablePack && wasProgrammerArtEnabled) {
                 client.options.resourcePacks.remove("programmer_art");
                 wasProgrammerArtEnabled = false;
                 resourcePackManager.scanPacks();
                 client.options.addResourcePackProfilesToManager(resourcePackManager);
                 client.reloadResources();
+
+                toastShownForOldLook = false;
             }
         }
     }
