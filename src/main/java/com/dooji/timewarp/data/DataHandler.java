@@ -12,6 +12,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DataHandler {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -41,10 +43,37 @@ public class DataHandler {
     public static TimewarpData loadData(MinecraftServer server) {
         Path filePath = getDataFilePath(server);
         try (FileReader reader = new FileReader(filePath.toFile())) {
-            return gson.fromJson(reader, TimewarpData.class);
+            TimewarpData data = gson.fromJson(reader, TimewarpData.class);
+
+            if (data.getAutomaticObjectiveMechanics().isEmpty()) {
+                data.setAutomaticObjectiveMechanics(getDefaultMechanics());
+            }
+
+            return data;
         } catch (IOException | JsonSyntaxException e) {
             Timewarp.LOGGER.error("[Timewarp] Failed to load timewarp data", e);
-            return new TimewarpData();
+
+            TimewarpData defaultData = new TimewarpData();
+            defaultData.setAutomaticObjectiveMechanics(getDefaultMechanics());
+            return defaultData;
         }
+    }
+
+    private static Map<String, Boolean> getDefaultMechanics() {
+        Map<String, Boolean> defaultMechanics = new HashMap<>();
+        defaultMechanics.put("allowStacking", true);
+        defaultMechanics.put("oldMinecart", true);
+        defaultMechanics.put("oldAnimalBehavior", true);
+        defaultMechanics.put("allowSprinting", true);
+        defaultMechanics.put("versionText", true);
+        defaultMechanics.put("oldGUI", true);
+        defaultMechanics.put("noFrontView", true);
+        defaultMechanics.put("noSneaking", true);
+        defaultMechanics.put("noSwimming", true);
+        defaultMechanics.put("oldCombat", true);
+        defaultMechanics.put("noTrading", true);
+        defaultMechanics.put("oldLook", true);
+        defaultMechanics.put("noSmoothLighting", true);
+        return defaultMechanics;
     }
 }
